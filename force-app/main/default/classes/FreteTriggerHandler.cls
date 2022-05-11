@@ -15,6 +15,10 @@ public with sharing class FreteTriggerHandler {
         this.newMap = newMap;
     }
 
+    public void beforeInsert(){
+        FreteHelper.checkMandatoryFields(this.newRecords);
+    }
+
     public void beforeUpdate(){
         
     }
