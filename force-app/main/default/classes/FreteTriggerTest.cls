@@ -20,9 +20,5 @@ private class FreteTriggerTest {
         // Verify
         System.assertEquals(1, [SELECT count() from Frete__c]);
     }
-    
-    public FreteTriggerTest() {
-
-    }
 }
 
