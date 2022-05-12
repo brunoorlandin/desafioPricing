@@ -16,10 +16,11 @@ public with sharing class MargemTriggerHandler {
     }
 
     public void beforeInsert(){
-        
+        MargemHelper.checkMandatoryFields(this.newRecords);
+        MargemHelper.checkDuplicates(this.newRecords);
     }
 
     public void beforeUpdate(){
-        
+        MargemHelper.checkMandatoryFields(this.newRecords);
     }
 }

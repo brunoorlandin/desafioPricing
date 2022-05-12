@@ -11,9 +11,13 @@ public with sharing class MargemHelper {
             }
 
             if(margem.GrupoConta__c == null && margem.Conta__c == null){
+                System.debug('Conta e grupo conta vazios');
+                System.debug('Margem: ' + margem);
                 margem.addError(System.Label.ContaGrupoContaInvalido);
             }
             else if(margem.GrupoConta__c != null && margem.Conta__c != null){
+                System.debug('Conta ou grupo conta vazios');
+                System.debug('Margem: ' + margem);
                 margem.addError(System.Label.ContaGrupoContaInvalido);
             }
 
@@ -31,4 +35,37 @@ public with sharing class MargemHelper {
             }
         } 
     }
+
+    public static void checkDuplicates(List<Margem__c> margemList){
+        List<Margem__c> currentData = [
+            SELECT Name, Conta__c, GrupoConta__c, CentroDistribuicao__c, Cidade__c, Estado__c, HierarquiaProduto__c, Pais__c, Produto__c, Status__c, Valor__c
+            FROM Margem__c
+        ];
+
+        for(Margem__c newMargem : margemList){
+            for(Margem__c currentMargem : currentData){
+                if(newMargem.Name == currentMargem.Name){
+                    newMargem.addError(System.Label.MargemDuplicada);
+                }
+                else if(
+                    newMargem.CentroDistribuicao__c == currentMargem.CentroDistribuicao__c &&
+                    (
+                        newMargem.Conta__c == currentMargem.Conta__c ||
+                        newMargem.GrupoConta__c == currentMargem.GrupoConta__c
+                    ) &&
+                    (
+                        newMargem.Cidade__c == currentMargem.Cidade__c ||
+                        newMargem.Estado__c == currentMargem.Estado__c ||
+                        newMargem.Pais__c == currentMargem.Pais__c
+                    ) &&
+                    (
+                        newMargem.Produto__c == currentMargem.Produto__c ||
+                        newMargem.HierarquiaProduto__c == currentMargem.HierarquiaProduto__c
+                    )
+                ){
+                    newMargem.addError(System.Label.MargemDuplicada);
+                }
+            }
+        }
+    } 
 }
