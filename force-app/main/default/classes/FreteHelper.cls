@@ -28,4 +28,33 @@ public with sharing class FreteHelper {
             }
         }
     }
+
+    public static void checkDuplicates(List<Frete__c> freteList){
+        List<Frete__c> currentData = [
+            SELECT Name, CentroDistribuicao__c, Cidade__c, Estado__c, HierarquiaProduto__c, Pais__c, Produto__c, Status__c, Valor__c
+            FROM Frete__c
+        ];
+
+        for(Frete__c newFrete : freteList){
+            for(Frete__c currentFrete : currentData){
+                if(newFrete.Name == currentFrete.Name){
+                    newFrete.addError(Label.FreteDuplicado);
+                }
+                else if(
+                    newFrete.CentroDistribuicao__c == currentFrete.CentroDistribuicao__c &&
+                    (
+                        newFrete.Cidade__c == currentFrete.Cidade__c ||
+                        newFrete.Estado__c == currentFrete.Estado__c ||
+                        newFrete.Pais__c == currentFrete.Pais__c
+                    ) &&
+                    (
+                        newFrete.Produto__c == currentFrete.Produto__c ||
+                        newFrete.HierarquiaProduto__c == currentFrete.HierarquiaProduto__c
+                    )
+                ){
+                    newFrete.addError(Label.FreteDuplicado);
+                }
+            }
+        }
+    } 
 }

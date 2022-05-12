@@ -17,9 +17,10 @@ public with sharing class FreteTriggerHandler {
 
     public void beforeInsert(){
         FreteHelper.checkMandatoryFields(this.newRecords);
+        FreteHelper.checkDuplicates(this.newRecords);
     }
 
     public void beforeUpdate(){
-        
+        FreteHelper.checkMandatoryFields(this.newRecords);
     }
 }
