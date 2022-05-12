@@ -195,13 +195,22 @@ private class FreteTriggerTest {
             //Pais__c = pais.Id
         );
 
+        Exception error;
+
         // Perform test
         Test.startTest();
         insert frete;
-        insert freteDuplicate;
+        try {
+            insert freteDuplicate;
+        } catch (Exception e) {
+            error = e;
+        }
         Test.stopTest();
         // Verify
         System.assertEquals(1, [SELECT count() from Frete__c]);
+        if(error.getMessage() != null){
+            System.assert(error.getMessage().contains(System.Label.FreteDuplicado));
+        }
     }
 }
 
