@@ -49,7 +49,7 @@ private class MargemTriggerTest {
         
         Account acc = new Account(
             Name = 'Account teste',
-            CNPJ__c = 'XX.XXX.XXX/0001-XX',
+            CNPJ__c = '00360305000104',
             GrupoConta__c = grupoConta.Id
         );
         insert acc;
@@ -124,7 +124,7 @@ private class MargemTriggerTest {
         
         Account acc = new Account(
             Name = 'Account teste',
-            CNPJ__c = 'XX.XXX.XXX/0001-XX',
+            CNPJ__c = '00360305000104',
             GrupoConta__c = grupoConta.Id
         );
         insert acc;
@@ -210,7 +210,7 @@ private class MargemTriggerTest {
         
         Account acc = new Account(
             Name = 'Account teste',
-            CNPJ__c = 'XX.XXX.XXX/0001-XX',
+            CNPJ__c = '00360305000104',
             GrupoConta__c = grupoConta.Id
         );
         insert acc;
