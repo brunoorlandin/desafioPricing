@@ -15,7 +15,11 @@ public with sharing class AccountTriggerHandler {
             this.newMap = newMap;
         }
 
-    public void beforeInsert(){}
+    public void beforeInsert(){
+        AccountHelper.checkCNPJ(this.newRecords);
+    }
 
-    public void beforeUpdate(){}
+    public void beforeUpdate(){
+        AccountHelper.checkCNPJ(this.newRecords);
+    }
 }
