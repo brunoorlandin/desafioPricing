@@ -1,8 +1,6 @@
 trigger MargemTrigger on Margem__c (
   before insert,
-  before update,
-  after insert,
-  after update) {
+  before update) {
   MargemTriggerHandler handler = new MargemTriggerHandler(
       Trigger.old, 
       Trigger.new, 
@@ -16,12 +14,6 @@ trigger MargemTrigger on Margem__c (
     }
     when BEFORE_UPDATE{
       handler.beforeUpdate();
-    }
-    when AFTER_INSERT{
-      handler.afterInsert();
-    }
-    when AFTER_UPDATE{
-      handler.afterUpdate();
     }
   }
 }

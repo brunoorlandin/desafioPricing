@@ -69,14 +69,7 @@ public with sharing class MargemHelper {
         }
     }
 
-    public static List<Margem__c> calculateScore(){
-        List<Margem__c> margemWithScoreList = new List<Margem__c>();
-
-        List<Margem__c> margemList = [
-            SELECT Id, Conta__c, GrupoConta__c, Produto__c, HierarquiaProduto__c, Cidade__c, Estado__c, Pais__c, Score__c
-            FROM Margem__c
-        ];
-
+    public static void calculateScore(List<Margem__c> margemList){
         for(Margem__c margem : margemList){
             Integer score = 0;
 
@@ -109,10 +102,6 @@ public with sharing class MargemHelper {
             }
 
             margem.Score__c = score;
-
-            margemWithScoreList.add(margem);
         }
-
-        return margemWithScoreList;
     }
 }
