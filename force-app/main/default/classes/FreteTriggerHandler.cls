@@ -18,18 +18,11 @@ public with sharing class FreteTriggerHandler {
     public void beforeInsert(){
         FreteHelper.checkMandatoryFields(this.newRecords);
         FreteHelper.checkDuplicates(this.newRecords);
+        FreteHelper.calculateScore(this.newRecords);
     }
 
     public void beforeUpdate(){
         FreteHelper.checkMandatoryFields(this.newRecords);
-    }
-
-    public void afterInsert(){
-        List<Frete__c> freteList = FreteHelper.calculateScore();
-        update freteList;
-    }
-
-    public void afterUpdate(){
-
+        FreteHelper.calculateScore(this.newRecords);
     }
 }

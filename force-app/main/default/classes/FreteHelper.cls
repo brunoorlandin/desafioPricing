@@ -58,14 +58,7 @@ public with sharing class FreteHelper {
         }
     }
 
-    public static List<Frete__c> calculateScore(){
-        List<Frete__c> freteWithScoreList = new List<Frete__c>();
-
-        List<Frete__c> freteList = [
-            SELECT Id, Produto__c, HierarquiaProduto__c, Cidade__c, Estado__c, Pais__c, Score__c
-            FROM Frete__c
-        ];
-
+    public static void calculateScore(List<Frete__c> freteList){
         for(Frete__c frete : freteList){
             Integer score = 0;
 
@@ -90,10 +83,6 @@ public with sharing class FreteHelper {
             }
 
             frete.Score__c = score;
-
-            freteWithScoreList.add(frete);
         }
-
-        return freteWithScoreList;
     }
 }
