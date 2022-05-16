@@ -67,5 +67,52 @@ public with sharing class MargemHelper {
                 }
             }
         }
-    } 
+    }
+
+    public static List<Margem__c> calculateScore(){
+        List<Margem__c> margemWithScoreList = new List<Margem__c>();
+
+        List<Margem__c> margemList = [
+            SELECT Id, Conta__c, GrupoConta__c, Produto__c, HierarquiaProduto__c, Cidade__c, Estado__c, Pais__c, Score__c
+            FROM Margem__c
+        ];
+
+        for(Margem__c margem : margemList){
+            Integer score = 0;
+
+            if(margem.Produto__c != null){
+                score += 2000;
+            }
+
+            if(margem.HierarquiaProduto__c != null){
+                score += 1000;
+            }
+
+            if(margem.Conta__c != null){
+                score += 200;
+            }
+
+            if(margem.GrupoConta__c != null){
+                score += 100;
+            }
+
+            if(margem.Cidade__c != null){
+                score += 30;
+            }
+            
+            if(margem.Estado__c != null){
+                score += 20;
+            }
+
+            if(margem.Pais__c != null){
+                score += 10;
+            }
+
+            margem.Score__c = score;
+
+            margemWithScoreList.add(margem);
+        }
+
+        return margemWithScoreList;
+    }
 }

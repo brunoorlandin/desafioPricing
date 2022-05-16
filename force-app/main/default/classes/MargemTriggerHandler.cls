@@ -23,4 +23,14 @@ public with sharing class MargemTriggerHandler {
     public void beforeUpdate(){
         MargemHelper.checkMandatoryFields(this.newRecords);
     }
+
+    public void afterInsert(){
+        List<Margem__c> margemList = MargemHelper.calculateScore();
+        update margemList;
+    }
+
+    public void afterUpdate(){
+        // List<Margem__c> margemList = MargemHelper.calculateScore();
+        // update margemList;
+    }
 }
