@@ -23,4 +23,13 @@ public with sharing class FreteTriggerHandler {
     public void beforeUpdate(){
         FreteHelper.checkMandatoryFields(this.newRecords);
     }
+
+    public void afterInsert(){
+        List<Frete__c> freteList = FreteHelper.calculateScore();
+        update freteList;
+    }
+
+    public void afterUpdate(){
+
+    }
 }

@@ -1,4 +1,8 @@
-trigger FreteTrigger on Frete__c (before insert, before update){
+trigger FreteTrigger on Frete__c (
+  before insert, 
+  before update, 
+  after insert, 
+  after update){
   FreteTriggerHandler handler = new FreteTriggerHandler(
       Trigger.old, 
       Trigger.new, 
@@ -12,6 +16,12 @@ trigger FreteTrigger on Frete__c (before insert, before update){
     }
     when BEFORE_UPDATE{
       handler.beforeUpdate();
+    }
+    when AFTER_INSERT{
+      handler.afterInsert();
+    }
+    when AFTER_UPDATE{
+      handler.afterUpdate();
     }
   }
 }

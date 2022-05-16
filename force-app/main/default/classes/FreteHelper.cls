@@ -56,5 +56,44 @@ public with sharing class FreteHelper {
                 }
             }
         }
-    } 
+    }
+
+    public static List<Frete__c> calculateScore(){
+        List<Frete__c> freteWithScoreList = new List<Frete__c>();
+
+        List<Frete__c> freteList = [
+            SELECT Id, Produto__c, HierarquiaProduto__c, Cidade__c, Estado__c, Pais__c, Score__c
+            FROM Frete__c
+        ];
+
+        for(Frete__c frete : freteList){
+            Integer score = 0;
+
+            if(frete.Produto__c != null){
+                score += 2000;
+            }
+
+            if(frete.HierarquiaProduto__c != null){
+                score += 1000;
+            }
+
+            if(frete.Cidade__c != null){
+                score += 30;
+            }
+            
+            if(frete.Estado__c != null){
+                score += 20;
+            }
+
+            if(frete.Pais__c != null){
+                score += 10;
+            }
+
+            frete.Score__c = score;
+
+            freteWithScoreList.add(frete);
+        }
+
+        return freteWithScoreList;
+    }
 }
