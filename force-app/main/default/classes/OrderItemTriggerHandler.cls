@@ -18,6 +18,7 @@ public with sharing class OrderItemTriggerHandler {
 
     public void beforeInsert() {
         OrderItemHelper.validateFields(this.newRecords);
+        OrderItemHelper.calculateFinalPrice(this.newRecords);
     }
 
     public void beforeUpdate() {
