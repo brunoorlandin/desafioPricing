@@ -17,11 +17,16 @@ public with sharing class OrderTriggerHandler {
     }
 
     public void beforeInsert(){
-
+        OrderHelper.validateOrder(this.oldMap, this.newMap);
     }
 
     public void beforeUpdate(){
+        OrderHelper.validateOrder(this.oldMap, this.newMap);
+    }
 
+    public void afterUpdate(){
+        List<OrderItem> updatedOrderItemList = OrderHelper.checkRecalcOrderItems(this.oldMap, this.newMap);
+        update updatedOrderItemList;
     }
 
 

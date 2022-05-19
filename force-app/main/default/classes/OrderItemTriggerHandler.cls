@@ -23,6 +23,7 @@ public with sharing class OrderItemTriggerHandler {
 
     public void beforeUpdate() {
         OrderItemHelper.validateFields(this.newRecords);
+        OrderItemHelper.calculateFinalPrice(this.newRecords);
     }
 }
 

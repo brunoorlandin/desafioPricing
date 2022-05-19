@@ -14,7 +14,7 @@ public with sharing class OrderItemHelper {
         }
     }
 
-    public static void calculateFinalPrice(List<OrderItem> newOrderItemList){
+    public static List<OrderItem> calculateFinalPrice(List<OrderItem> newOrderItemList){
         Set<Id> orderIdSet = new Set<Id>();
         Set<Id> productIdSet = new Set<Id>();
 
@@ -36,6 +36,33 @@ public with sharing class OrderItemHelper {
         ]);
 
         Map<OrderItem, Frete__c> orderItemToFreteMap = searchFrete(newOrderItemList, orderMap, productMap);
+        Map<OrderItem, Margem__c> orderItemToMargemMap = searchMargin(newOrderItemList, orderMap, productMap);
+        Map<OrderItem, Imposto__c> orderItemToImpostoMap = searchImposto(newOrderItemList, orderMap, productMap);
+
+        for(OrderItem orderItem : orderItemToFreteMap.keySet()){
+            Frete__c frete = orderItemToFreteMap.get(orderItem);
+            Margem__c margem = orderItemToMargemMap.get(orderItem);
+            Imposto__c imposto = orderItemToImpostoMap.get(orderItem);
+
+            if(frete != null && margem != null && imposto != null){
+                orderItem.ValorFrete__c = frete.Valor__c;
+                orderItem.PorcentagemMargem__c = margem.Valor__c;
+                orderItem.PorcentagemImposto__c = imposto.ImpostoSobreCusto__c;
+                
+                Decimal impostoValue = (1 + (imposto.ImpostoSobreCusto__c / 100));
+                Decimal margemValue =  (1 + (margem.Valor__c / 100));
+                
+                Decimal priceWithoutMargin = (orderItem.ListPrice + frete.Valor__c) * impostoValue;
+                orderItem.PrecoSemMargem__c = priceWithoutMargin;
+
+                Decimal finalPrice = priceWithoutMargin * margemValue;
+                orderItem.PrecoFinal__c = finalPrice;
+
+                orderItem.Desconto__c = ((finalPrice - orderItem.UnitPrice) / finalPrice) * 100;
+            }
+        }
+
+        return new List<OrderItem>(orderItemToMargemMap.keySet());
     }
 
     public static Map<OrderItem, Frete__c> searchFrete(
@@ -171,12 +198,66 @@ public with sharing class OrderItemHelper {
         Map<Id, Product2> productMap
     ){
         return (String.isBlank(margem.Conta__c) || margem.Conta__c == orderMap.get(orderItem.OrderId).AccountId) &&
-        (String.isBlank(margem.Produto__c) || margem.Produto__c == orderMap.get(orderItem.OrderId).Account.GrupoConta__c) &&
+        (String.isBlank(margem.GrupoConta__c) || margem.GrupoConta__c == orderMap.get(orderItem.OrderId).Account.GrupoConta__c) &&
         (String.isBlank(margem.Produto__c) || margem.Produto__c == orderItem.Product2Id) &&
         (String.isBlank(margem.HierarquiaProduto__c) || margem.HierarquiaProduto__c == productMap.get(orderItem.Product2Id).HierarquiaProduto__c) &&
         (String.isBlank(margem.CentroDistribuicao__c) || margem.CentroDistribuicao__c == orderMap.get(orderItem.OrderId).CentroDistribuicao__c) &&
         (String.isBlank(margem.Cidade__c) || margem.Cidade__c == orderMap.get(orderItem.OrderId).EnderecoConta__r.Cidade__c) &&
         (String.isBlank(margem.Estado__c) || margem.Estado__c == orderMap.get(orderItem.OrderId).EnderecoConta__r.Cidade__r.Estado__c) &&
         (String.isBlank(margem.Pais__c) || margem.Pais__c == orderMap.get(orderItem.OrderId).EnderecoConta__r.Cidade__r.Estado__r.Pais__c);
+    }
+
+    public static Map<OrderItem, Imposto__c> searchImposto(
+        List<OrderItem> newOrderItemList,
+        Map<Id, Order> orderMap,
+        Map<Id, Product2> productMap
+    ){
+        Set<Id> dcIds = new Set<Id>();
+        Set<Id> stateIds = new Set<Id>();
+        Set<Id> productIds = new Set<Id>();
+        
+        for(Order order : orderMap.values()){
+            dcIds.add(order.CentroDistribuicao__c);
+            stateIds.add(order.EnderecoConta__r.Cidade__r.Estado__c);
+        }
+
+        for(Product2 product : productMap.values()){
+            productIds.add(product.Id);
+        }
+
+        List<Imposto__c> impostoList = [
+            SELECT Id, Produto__c, CentroDistribuicao__c, Status__c, ImpostoSobreCusto__c, Estado__c
+            FROM Imposto__c
+            WHERE (Produto__c IN: productIds OR Produto__c = null) AND
+            (CentroDistribuicao__c IN: dcIds OR CentroDistribuicao__c = null) AND
+            (Estado__c IN: stateIds OR Estado__c = null) AND
+            (Status__c = 'Aprovado')
+        ];
+
+        Map<OrderItem, Imposto__c> orderItemToImposto = new Map<OrderItem, Imposto__c>();
+
+        for(OrderItem orderItem : newOrderItemList){
+            orderItemToImposto.put(orderItem, null);
+
+            for(Imposto__c imposto : impostoList){
+                if(matchImposto(imposto, orderItem, orderMap, productMap)){
+                    orderItemToImposto.put(orderItem, imposto);
+                    break;
+                }
+            }
+        }
+
+        return orderItemToImposto;
+    }
+
+    public static Boolean matchImposto(
+        Imposto__c imposto,
+        OrderItem orderItem,
+        Map<Id, Order> orderMap,
+        Map<Id, Product2> productMap
+    ){
+        return (String.isBlank(imposto.Produto__c) || imposto.Produto__c == orderItem.Product2Id) &&
+        (String.isBlank(imposto.CentroDistribuicao__c) || imposto.CentroDistribuicao__c == orderMap.get(orderItem.OrderId).CentroDistribuicao__c) &&
+        (String.isBlank(imposto.Estado__c) || imposto.Estado__c == orderMap.get(orderItem.OrderId).EnderecoConta__r.Cidade__r.Estado__c);
     }
 }
