@@ -22,7 +22,8 @@ public with sharing class ImpostoHelper {
                 }
                 else if(
                     newImposto.CentroDistribuicao__c == currentImposto.CentroDistribuicao__c &&
-                    newImposto.Estado__c == currentImposto.Estado__c
+                    newImposto.Estado__c == currentImposto.Estado__c &&
+                    newImposto.Produto__c == currentImposto.Produto__c
                 ){
                     newImposto.addError(Label.ImpostoDuplicado);
                 }

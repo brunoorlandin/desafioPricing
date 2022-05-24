@@ -37,6 +37,11 @@ public with sharing class FreteHelper {
 
         for(Frete__c newFrete : freteList){
             for(Frete__c currentFrete : currentData){
+                System.debug('Produto antigo' + currentFrete.Produto__c);
+                System.debug('Produto novo' + newFrete.Produto__c);
+                System.debug('Hierarquia antiga' + currentFrete.HierarquiaProduto__c);
+                System.debug('Hierarquia nova' + newFrete.HierarquiaProduto__c);
+
                 if(newFrete.Name == currentFrete.Name){
                     newFrete.addError(Label.FreteDuplicado);
                 }
@@ -48,8 +53,7 @@ public with sharing class FreteHelper {
                         newFrete.Pais__c == currentFrete.Pais__c
                     ) &&
                     (
-                        newFrete.Produto__c == currentFrete.Produto__c ||
-                        newFrete.HierarquiaProduto__c == currentFrete.HierarquiaProduto__c
+                        newFrete.Produto__c == currentFrete.Produto__c 
                     )
                 ){
                     newFrete.addError(Label.FreteDuplicado);

@@ -28,28 +28,25 @@ public with sharing class OrderHelper {
 
             if(order.CentroDistribuicao__c != oldOrder.CentroDistribuicao__c){
                 orderIds.add(order.Id);
+                System.debug('Alteração no CD');
             }
-
-            if(order.EnderecoConta__r.Cidade__c != oldOrder.EnderecoConta__r.Cidade__c){
+            if(order.EnderecoConta__c != oldOrder.EnderecoConta__c){
                 orderIds.add(order.Id);
-            }
-
-            if(order.EnderecoConta__r.Cidade__r.Estado__c != oldOrder.EnderecoConta__r.Cidade__r.Estado__c){
-                orderIds.add(order.Id);
-            }
-
-            if(order.EnderecoConta__r.Cidade__r.Estado__r.Pais__c != oldOrder.EnderecoConta__r.Cidade__r.Estado__r.Pais__c){
-                orderIds.add(order.Id);
+                System.debug('Alteração no endereço da conta');
             }
         }
 
         List<Orderitem> orderItemList = [
-            SELECT Id, Desconto__c, PorcentagemImposto__c, PorcentagemMargem__c, PrecoFinal__c, PrecoSemMargem__c, ValorFrete__c, ListPrice, UnitPrice
+            SELECT Id, OrderItem.OrderId, OrderItem.Product2Id, Desconto__c, PorcentagemImposto__c, PorcentagemMargem__c, PrecoFinal__c, PrecoSemMargem__c, ValorFrete__c, ListPrice, UnitPrice
             FROM OrderItem
             WHERE OrderId IN: orderIds
         ];
 
+        System.debug('List de pedido => ' + orderItemList);
+
         List<OrderItem> updatedOrderItemList = OrderItemHelper.calculateFinalPrice(orderItemList);
+
+        System.debug('Lista de pedidos recalculada => ' + updatedOrderItemList);
 
         return updatedOrderItemList;
     }

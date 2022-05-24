@@ -23,6 +23,9 @@ public with sharing class OrderItemHelper {
             productIdSet.add(orderItem.Product2Id);
         }
 
+        System.debug('orderIdSet => ' + orderIdSet);
+        System.debug('productIdSet => ' + productIdSet);
+
         Map<Id, Order> orderMap = new Map<Id, Order>([
             SELECT Id, AccountId, Account.GrupoConta__c, CentroDistribuicao__c ,EnderecoConta__r.Cidade__c, EnderecoConta__r.Cidade__r.Estado__c, EnderecoConta__r.Cidade__r.Estado__r.Pais__c
             FROM Order
@@ -35,6 +38,11 @@ public with sharing class OrderItemHelper {
             WHERE Id IN: productIdSet
         ]);
 
+        System.debug('orderMap => ' + orderMap);
+        System.debug('productMap => ' + productMap);
+
+        System.debug('Lista de itens do pedido calcPrice => ' + newOrderItemList);
+
         Map<OrderItem, Frete__c> orderItemToFreteMap = searchFrete(newOrderItemList, orderMap, productMap);
         Map<OrderItem, Margem__c> orderItemToMargemMap = searchMargin(newOrderItemList, orderMap, productMap);
         Map<OrderItem, Imposto__c> orderItemToImpostoMap = searchImposto(newOrderItemList, orderMap, productMap);
@@ -44,21 +52,35 @@ public with sharing class OrderItemHelper {
             Margem__c margem = orderItemToMargemMap.get(orderItem);
             Imposto__c imposto = orderItemToImpostoMap.get(orderItem);
 
+            System.debug('Frete calc price =>' + frete);
+            System.debug('Margem calc price =>' + margem);
+            System.debug('Imposto calc price =>' + imposto);
+
             if(frete != null && margem != null && imposto != null){
                 orderItem.ValorFrete__c = frete.Valor__c;
+                System.debug('Valor frete => ' + frete.Valor__c);
                 orderItem.PorcentagemMargem__c = margem.Valor__c;
+                System.debug('Valor margem => ' + margem.Valor__c);
                 orderItem.PorcentagemImposto__c = imposto.ImpostoSobreCusto__c;
+                System.debug('Valor imposto => ' + imposto.ImpostoSobreCusto__c);
                 
                 Decimal impostoValue = (1 + (imposto.ImpostoSobreCusto__c / 100));
                 Decimal margemValue =  (1 + (margem.Valor__c / 100));
                 
                 Decimal priceWithoutMargin = (orderItem.ListPrice + frete.Valor__c) * impostoValue;
                 orderItem.PrecoSemMargem__c = priceWithoutMargin;
+                System.debug('Preço sem margem => ' + priceWithoutMargin);
 
                 Decimal finalPrice = priceWithoutMargin * margemValue;
                 orderItem.PrecoFinal__c = finalPrice;
+                System.debug('Preço final => ' + finalPrice);
 
                 orderItem.Desconto__c = ((finalPrice - orderItem.UnitPrice) / finalPrice) * 100;
+                System.debug('Desconto => ' + orderItem.Desconto__c);
+            }
+            else {
+                System.debug('Entrou erro null');
+                orderItem.addError(System.Label.ObjetosFaltantes);
             }
         }
 
@@ -89,6 +111,13 @@ public with sharing class OrderItemHelper {
             hierarchyIds.add(product.HierarquiaProduto__c);
         }
 
+        System.debug('dcIds => ' + dcIds);
+        System.debug('cityIds => ' + cityIds);
+        System.debug('stateIds => ' + stateIds);
+        System.debug('countryIds => ' + countryIds);
+        System.debug('hierarchyIds => ' + hierarchyIds);
+        System.debug('productIds => ' + productIds);
+
         List<Frete__c> freteList = [
             SELECT Id, HierarquiaProduto__c, Produto__c, CentroDistribuicao__c, Status__c, Valor__c, Cidade__c, Estado__c, Pais__c, Score__c
             FROM Frete__c
@@ -102,6 +131,8 @@ public with sharing class OrderItemHelper {
             ORDER BY Score__c DESC
         ];
 
+        System.debug('freteList => ' + freteList);
+
         Map<OrderItem, Frete__c> orderItemToFrete = new Map<OrderItem, Frete__c>();
 
         for(OrderItem orderItem : newOrderItemList){
@@ -109,10 +140,13 @@ public with sharing class OrderItemHelper {
 
             for(Frete__c frete : freteList){
                 if(matchFrete(frete, orderItem, orderMap, productMap)){
+                    System.debug('Entrou');
                     orderItemToFrete.put(orderItem, frete);
                     break;
                 }
             }
+
+            System.debug('Frete list achados => ' + orderItemToFrete);
         }
 
         return orderItemToFrete;

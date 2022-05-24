@@ -50,8 +50,7 @@ public with sharing class MargemHelper {
                 else if(
                     newMargem.CentroDistribuicao__c == currentMargem.CentroDistribuicao__c &&
                     (
-                        newMargem.Conta__c == currentMargem.Conta__c ||
-                        newMargem.GrupoConta__c == currentMargem.GrupoConta__c
+                        newMargem.Conta__c == currentMargem.Conta__c 
                     ) &&
                     (
                         newMargem.Cidade__c == currentMargem.Cidade__c ||
@@ -59,8 +58,7 @@ public with sharing class MargemHelper {
                         newMargem.Pais__c == currentMargem.Pais__c
                     ) &&
                     (
-                        newMargem.Produto__c == currentMargem.Produto__c ||
-                        newMargem.HierarquiaProduto__c == currentMargem.HierarquiaProduto__c
+                        newMargem.Produto__c == currentMargem.Produto__c 
                     )
                 ){
                     newMargem.addError(System.Label.MargemDuplicada);

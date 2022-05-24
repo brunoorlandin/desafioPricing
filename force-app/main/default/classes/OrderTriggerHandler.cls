@@ -17,7 +17,7 @@ public with sharing class OrderTriggerHandler {
     }
 
     public void beforeInsert(){
-        OrderHelper.validateOrder(this.oldMap, this.newMap);
+        
     }
 
     public void beforeUpdate(){
@@ -26,7 +26,9 @@ public with sharing class OrderTriggerHandler {
 
     public void afterUpdate(){
         List<OrderItem> updatedOrderItemList = OrderHelper.checkRecalcOrderItems(this.oldMap, this.newMap);
-        update updatedOrderItemList;
+        if(updatedOrderItemList != null){
+            update updatedOrderItemList;
+        }
     }
 
 
