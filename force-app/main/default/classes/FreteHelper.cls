@@ -46,14 +46,20 @@ public with sharing class FreteHelper {
                     newFrete.addError(Label.FreteDuplicado);
                 }
                 else if(
-                    newFrete.CentroDistribuicao__c == currentFrete.CentroDistribuicao__c &&
+                    newFrete.CentroDistribuicao__c == currentFrete.CentroDistribuicao__c 
+                    &&
                     (
                         newFrete.Cidade__c == currentFrete.Cidade__c ||
                         newFrete.Estado__c == currentFrete.Estado__c ||
                         newFrete.Pais__c == currentFrete.Pais__c
-                    ) &&
+                    ) 
+                    &&
                     (
                         newFrete.Produto__c == currentFrete.Produto__c 
+                    )
+                    &&
+                    (
+                        newFrete.Valor__c == currentFrete.Valor__c 
                     )
                 ){
                     newFrete.addError(Label.FreteDuplicado);

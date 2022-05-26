@@ -59,6 +59,9 @@ public with sharing class MargemHelper {
                     ) &&
                     (
                         newMargem.Produto__c == currentMargem.Produto__c 
+                    ) &&
+                    (
+                        newMargem.Valor__c == currentMargem.Valor__c 
                     )
                 ){
                     newMargem.addError(System.Label.MargemDuplicada);

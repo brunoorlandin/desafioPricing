@@ -24,7 +24,8 @@ public with sharing class ImpostoHelper {
                     newImposto.CentroDistribuicao__c == currentImposto.CentroDistribuicao__c &&
                     newImposto.Estado__c == currentImposto.Estado__c &&
                     newImposto.Produto__c == currentImposto.Produto__c
-                ){
+                )
+                {
                     newImposto.addError(Label.ImpostoDuplicado);
                 }
             }
